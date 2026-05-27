@@ -1,0 +1,1787 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<title>BØK2010 — Eksamenstrening V2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: linear-gradient(135deg, #0f1117 0%, #1a1f2e 100%);
+  color: #e8eaf0;
+  min-height: 100vh;
+  padding: 20px;
+}
+.container { max-width: 900px; margin: 0 auto; }
+
+header {
+  text-align: center;
+  margin-bottom: 24px;
+  padding: 20px;
+  background: rgba(126, 200, 227, 0.1);
+  border-radius: 16px;
+  border: 1px solid rgba(126, 200, 227, 0.3);
+}
+h1 { color: #7ec8e3; font-size: 1.6em; margin-bottom: 6px; }
+.subtitle { color: #a0a8b8; font-size: 0.9em; }
+
+/* MAIN MODE SELECTOR */
+.mode-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+@media (max-width: 600px) { .mode-selector { grid-template-columns: 1fr; } }
+.mode-btn {
+  padding: 18px;
+  background: #1e2130;
+  color: #e8eaf0;
+  border: 2px solid #2a2f42;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: 600;
+  transition: all 0.2s;
+  text-align: left;
+}
+.mode-btn:hover {
+  background: #252a3a;
+  border-color: #7ec8e3;
+  transform: translateY(-2px);
+}
+.mode-btn.active {
+  background: linear-gradient(135deg, #7ec8e3 0%, #6bb5d0 100%);
+  color: #0f1117;
+  border-color: #7ec8e3;
+}
+.mode-btn-icon { font-size: 1.6em; display: block; margin-bottom: 6px; }
+.mode-btn-title { font-size: 1.05em; margin-bottom: 4px; }
+.mode-btn-desc { font-size: 0.78em; opacity: 0.85; font-weight: 400; }
+
+/* START SCREEN */
+.start-screen {
+  background: #1e2130;
+  padding: 30px;
+  border-radius: 14px;
+  text-align: center;
+}
+.start-screen.hidden { display: none; }
+.start-screen h2 { color: #7ec8e3; margin-bottom: 12px; }
+.start-screen p { color: #c0c8d8; line-height: 1.6; margin-bottom: 8px; font-size: 0.92em; }
+.start-info {
+  background: #252a3a;
+  border-radius: 10px;
+  padding: 16px;
+  margin: 20px 0;
+  text-align: left;
+}
+.start-info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 0.88em;
+}
+.start-info-item span:first-child { color: #a0a8b8; }
+.start-info-item span:last-child { color: #7ec8e3; font-weight: 600; }
+
+.btn-start {
+  background: linear-gradient(135deg, #6bff9e 0%, #7ec8e3 100%);
+  color: #0f1117;
+  padding: 14px 30px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1em;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 14px;
+  transition: transform 0.2s;
+}
+.btn-start:hover { transform: scale(1.04); }
+
+/* QUIZ AREA */
+.quiz-area { display: none; }
+.quiz-area.active { display: block; }
+
+.progress-container {
+  background: #1e2130;
+  padding: 14px 18px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  position: sticky;
+  top: 10px;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85em;
+  color: #c0c8d8;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.progress-bar-bg {
+  height: 8px;
+  background: #2a2f42;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7ec8e3 0%, #6bff9e 100%);
+  border-radius: 4px;
+  transition: width 0.4s;
+  width: 0%;
+}
+
+.timer {
+  display: inline-block;
+  background: #ffd16622;
+  color: #ffd166;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.question {
+  background: #1e2130;
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 18px;
+  border-left: 4px solid #7ec8e3;
+  display: none;
+  animation: fadeIn 0.3s;
+}
+.question.visible { display: block; }
+.question.theory { border-left-color: #c77dff; }
+.question.math { border-left-color: #ffd166; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.q-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.q-num {
+  background: #7ec8e322;
+  color: #7ec8e3;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.75em;
+  font-weight: 700;
+}
+.q-cat {
+  background: #c77dff22;
+  color: #c77dff;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.72em;
+  font-weight: 600;
+}
+.q-weight {
+  background: #ffd16622;
+  color: #ffd166;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.72em;
+  font-weight: 600;
+}
+.q-difficulty {
+  font-size: 0.72em;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+.q-difficulty.easy { background: #6bff9e22; color: #6bff9e; }
+.q-difficulty.medium { background: #ffd16622; color: #ffd166; }
+.q-difficulty.hard { background: #ff6b6b22; color: #ff6b6b; }
+
+.q-text {
+  font-size: 0.95em;
+  line-height: 1.6;
+  color: #e8eaf0;
+  margin-bottom: 14px;
+  white-space: pre-wrap;
+}
+.q-text strong { color: #ffd166; }
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+.option {
+  background: #252a3a;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 12px 16px;
+  cursor: pointer;
+  color: #c0c8d8;
+  font-size: 0.88em;
+  transition: all 0.2s;
+  text-align: left;
+  line-height: 1.5;
+}
+.option:hover { border-color: #7ec8e3; background: #2a3045; }
+.option.selected { background: #7ec8e322; border-color: #7ec8e3; color: #fff; }
+.option.correct { background: #6bff9e22; border-color: #6bff9e; color: #6bff9e; }
+.option.incorrect { background: #ff6b6b22; border-color: #ff6b6b; color: #ff6b6b; }
+
+.text-input {
+  width: 100%;
+  background: #252a3a;
+  border: 2px solid #3a3f52;
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: #fff;
+  font-size: 0.9em;
+  font-family: inherit;
+  margin-top: 8px;
+  transition: border-color 0.2s;
+}
+.text-input:focus { outline: none; border-color: #7ec8e3; }
+textarea.text-input { min-height: 120px; resize: vertical; }
+
+.q-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+.btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.85em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-primary {
+  background: #7ec8e3;
+  color: #0f1117;
+}
+.btn-primary:hover { background: #5fb3d3; }
+.btn-secondary {
+  background: #2a2f42;
+  color: #c0c8d8;
+}
+.btn-secondary:hover { background: #3a3f52; }
+.btn-show {
+  background: #ffd16622;
+  color: #ffd166;
+  border: 1px solid #ffd16655;
+}
+.btn-show:hover { background: #ffd16633; }
+
+.feedback {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 0.85em;
+  line-height: 1.6;
+  display: none;
+}
+.feedback.show { display: block; animation: fadeIn 0.3s; }
+.feedback.correct {
+  background: #6bff9e15;
+  border-left: 3px solid #6bff9e;
+  color: #c8ffe0;
+}
+.feedback.incorrect {
+  background: #ff6b6b15;
+  border-left: 3px solid #ff6b6b;
+  color: #ffd0d0;
+}
+.feedback.info {
+  background: #7ec8e315;
+  border-left: 3px solid #7ec8e3;
+  color: #d0e8f5;
+}
+.feedback strong { color: #fff; }
+.feedback .answer-key {
+  background: #252a3a;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-top: 8px;
+  font-family: monospace;
+  color: #ffd166;
+  white-space: pre-wrap;
+  font-size: 0.85em;
+}
+
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+  gap: 10px;
+}
+.nav-btn {
+  flex: 1;
+  padding: 14px;
+  background: #1e2130;
+  color: #e8eaf0;
+  border: 2px solid #2a2f42;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.nav-btn:hover:not(:disabled) {
+  background: #7ec8e3;
+  color: #0f1117;
+  border-color: #7ec8e3;
+}
+.nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.summary {
+  background: #1e2130;
+  border-radius: 14px;
+  padding: 30px;
+  text-align: center;
+  display: none;
+}
+.summary.visible { display: block; }
+.summary h2 { color: #7ec8e3; margin-bottom: 14px; }
+.score-circle {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  margin: 20px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4em;
+  font-weight: 700;
+  border: 8px solid #7ec8e3;
+  color: #7ec8e3;
+}
+.grade-display {
+  font-size: 2.5em;
+  font-weight: 700;
+  margin: 14px 0;
+}
+
+.hint {
+  color: #a0a8b8;
+  font-style: italic;
+  font-size: 0.82em;
+  margin-top: 6px;
+}
+
+.formula-hint {
+  background: #252a3a;
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 10px 0;
+  font-family: monospace;
+  color: #ffd166;
+  font-size: 0.85em;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>📝 BØK2010 — Eksamenstrening V2026</h1>
+    <p class="subtitle">Velg modus for å starte treningen</p>
+  </header>
+
+  <div class="mode-selector">
+    <button class="mode-btn" onclick="selectMode('theory')" id="mode-theory">
+      <span class="mode-btn-icon">📚</span>
+      <div class="mode-btn-title">Teori & Begreper</div>
+      <div class="mode-btn-desc">35 spørsmål · Definisjoner, sant/usant, MC · Hurtig repetisjon</div>
+    </button>
+    <button class="mode-btn" onclick="selectMode('math')" id="mode-math">
+      <span class="mode-btn-icon">🧮</span>
+      <div class="mode-btn-title">Matematikk & Regning</div>
+      <div class="mode-btn-desc">30 oppgaver · EOQ, sensitivitet, prognoser · Trenger papir og kalkulator</div>
+    </button>
+    <button class="mode-btn" onclick="selectMode('full')" id="mode-full">
+      <span class="mode-btn-icon">🎯</span>
+      <div class="mode-btn-title">Full eksamen</div>
+      <div class="mode-btn-desc">Blandet utvalg · Som en ekte eksamen · 4 timer</div>
+    </button>
+  </div>
+
+  <!-- START SCREEN -->
+  <div class="start-screen" id="start-screen">
+    <h2 id="start-title">Velg en modus over for å starte</h2>
+    <p id="start-desc">Hver modus tester forskjellige aspekter av faget.</p>
+    
+    <div class="start-info" id="start-info" style="display:none">
+      <div class="start-info-item">
+        <span>Antall oppgaver:</span>
+        <span id="info-count">-</span>
+      </div>
+      <div class="start-info-item">
+        <span>Total poengsum:</span>
+        <span id="info-points">-</span>
+      </div>
+      <div class="start-info-item">
+        <span>Anbefalt tid:</span>
+        <span id="info-time">-</span>
+      </div>
+      <div class="start-info-item">
+        <span>Vanskelighet:</span>
+        <span id="info-difficulty">-</span>
+      </div>
+    </div>
+    
+    <button class="btn-start" id="start-btn" onclick="startQuiz()" style="display:none">▶️ Start trening</button>
+  </div>
+
+  <!-- QUIZ AREA -->
+  <div class="quiz-area" id="quiz-area">
+    <div class="progress-container">
+      <div class="progress-info">
+        <span>Spørsmål <span id="current-q">1</span>/<span id="total-q">25</span></span>
+        <span class="timer" id="timer">00:00</span>
+        <span>Poeng: <span id="score">0</span>/<span id="max-score">100</span></span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-bar"></div>
+      </div>
+    </div>
+
+    <div id="questions-container"></div>
+
+    <div class="nav-buttons">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)" disabled>← Forrige</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Neste →</button>
+    </div>
+  </div>
+
+  <div class="summary" id="summary">
+    <h2>🎯 Trening fullført</h2>
+    <div class="score-circle" id="final-score">0%</div>
+    <div class="grade-display" id="final-grade">-</div>
+    <p id="summary-text" style="margin: 14px 0; color: #c0c8d8; line-height: 1.6;"></p>
+    <p id="time-used" style="color: #a0a8b8; margin: 10px 0;"></p>
+    <div style="display:flex; gap:10px; justify-content:center; margin-top:14px; flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="restart()">🔄 Start på nytt</button>
+      <button class="btn btn-secondary" onclick="backToMenu()">📋 Tilbake til meny</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== THEORY QUESTIONS (35) ==========
+const theoryQuestions = [
+  {
+    cat: "Intro/Begreper",
+    weight: "MC",
+    points: 2,
+    difficulty: "easy",
+    text: "Hvilket av følgende uttrykker tilgang på ressurser i en matematisk modell?",
+    type: "mc",
+    options: ["En beslutningsvariabel", "En målfunksjon", "En begrensning (restriksjon)", "En parameter"],
+    correct: 2,
+    explanation: "En begrensning (restriksjon) uttrykker tilgang på ressurser. Beslutningsvariabler er det vi bestemmer, målfunksjonen er det vi maks/min'er, og parametere er konstanter i modellen."
+  },
+  {
+    cat: "Intro/Begreper",
+    weight: "MC",
+    points: 2,
+    difficulty: "easy",
+    text: "Hva beskriver beslutningsvariabler best?",
+    type: "mc",
+    options: [
+      "De måler verdien av målfunksjonen",
+      "De angir hvor mye/hvor mange enheter som skal produseres, kjøpes, ansettes osv.",
+      "De finnes alltid én per begrensning",
+      "De måler hvor mye av hver ressurs som er igjen"
+    ],
+    correct: 1,
+    explanation: "Beslutningsvariabler representerer mengden av noe som skal bestemmes — typisk antall enheter produsert eller kjøpt."
+  },
+  {
+    cat: "Intro/Begreper",
+    weight: "MC",
+    points: 2,
+    difficulty: "easy",
+    text: "Sant eller usant: En typisk målfunksjon kan skrives som '3S + 2R + 5Z ≤ 20'",
+    type: "mc",
+    options: ["Sant", "Usant"],
+    correct: 1,
+    explanation: "USANT. Målfunksjoner inneholder IKKE ulikhetstegn (≤, ≥). En målfunksjon er noe som maksimeres eller minimeres, f.eks. 'MAX Z = 3S + 2R + 5Z'. Uttrykk med ≤ er restriksjoner."
+  },
+  {
+    cat: "Break-even",
+    weight: "MC",
+    points: 2,
+    difficulty: "easy",
+    text: "Hvis pris øker (mens variable og faste kostnader holdes konstante), hva skjer med break-even?",
+    type: "mc",
+    options: ["Det øker", "Det reduseres", "Det forblir uendret", "Det blir negativt"],
+    correct: 1,
+    explanation: "Break-even = FC / (Pris - VUC). Når pris øker, øker nevneren (dekningsbidraget) → break-even reduseres."
+  },
+  {
+    cat: "Break-even",
+    weight: "MC",
+    points: 2,
+    difficulty: "easy",
+    text: "Hvis variable kostnader øker, men pris og faste kostnader holdes konstante, hva skjer med break-even?",
+    type: "mc",
+    options: ["Det reduseres", "Det øker", "Det forblir uendret", "Det blir umulig å beregne"],
+    correct: 1,
+    explanation: "Når VUC øker, blir dekningsbidraget (P - VUC) mindre → break-even øker."
+  },
+  {
+    cat: "LP-teori",
+    weight: "MC",
+    points: 3,
+    difficulty: "medium",
+    text: "Hvilket av disse er IKKE en uregelmessig type LP-problem?",
+    type: "mc",
+    options: [
+      "Flere optimale løsninger",
+      "Ingen gjennomførbar løsning",
+      "Ubegrenset løsning",
+      "Negativ skyggepris"
+    ],
+    correct: 3,
+    explanation: "De tre uregelmessige typene er: flere optimale løsninger (parallell målfunksjon), ingen gjennomførbar løsning (motstridende restriksjoner), og ubegrenset løsning (åpent mulighetsområde). Negativ skyggepris finnes ikke i standard max-problemer med ≤-restriksjoner."
+  },
+  {
+    cat: "LP-teori",
+    weight: "MC",
+    points: 3,
+    difficulty: "medium",
+    text: "Hvor i mulighetsområdet ligger en optimal LP-løsning?",
+    type: "mc",
+    options: [
+      "I sentrum av mulighetsområdet",
+      "Tilfeldig hvor som helst i mulighetsområdet",
+      "Alltid i et hjørnepunkt (eller langs en kant ved flere optimale løsninger)",
+      "Langs målfunksjonens skjæring med y-aksen"
+    ],
+    correct: 2,
+    explanation: "Hovedteorem i LP: optimal løsning ligger alltid i et hjørnepunkt av mulighetsområdet. Ved 'flere optimale løsninger' kan hele kanten mellom to hjørnepunkter være optimal."
+  },
+  {
+    cat: "LP-teori",
+    weight: "MC",
+    points: 3,
+    difficulty: "medium",
+    text: "Hva betyr 'slakk' i en LP-løsning?",
+    type: "mc",
+    options: [
+      "Hvor mye av en ressurs som er brukt",
+      "Hvor mye av en ressurs som er ubrukt — forskjell mellom høyre side og forbruk",
+      "Et mål på løsningens nøyaktighet",
+      "Hvor mye målfunksjonen kan endres"
+    ],
+    correct: 1,
+    explanation: "Slakk = ubrukt kapasitet av en ressurs. Slakk = 0 betyr at restriksjonen er bindende (fullt utnyttet). Slakk > 0 betyr at restriksjonen ikke er bindende."
+  },
+  {
+    cat: "LP-sensitivitet",
+    weight: "MC",
+    points: 3,
+    difficulty: "medium",
+    text: "En restriksjon har Slakk = 15 og Skyggepris = 0. Hva betyr dette?",
+    type: "mc",
+    options: [
+      "Restriksjonen er bindende",
+      "Restriksjonen er ikke bindende — vi har 15 enheter ubrukt kapasitet, og ekstra kapasitet gir ingen verdi",
+      "Vi har brukt 15 enheter for mye",
+      "Restriksjonen er feilformulert"
+    ],
+    correct: 1,
+    explanation: "Ikke-bindende restriksjon (slakk > 0) har alltid skyggepris = 0. Vi har allerede 15 enheter til overs, så å øke kapasiteten gir ingen ekstra verdi."
+  },
+  {
+    cat: "LP-sensitivitet",
+    weight: "MC",
+    points: 3,
+    difficulty: "medium",
+    text: "Hva er en skyggepris (shadow price)?",
+    type: "mc",
+    options: [
+      "Prisen på reservetimer i produksjonen",
+      "Marginal endring i målfunksjonen for én ekstra enhet på høyre side av en bindende restriksjon",
+      "Forventet pris i fremtiden",
+      "Forskjellen mellom maks og min løsninger"
+    ],
+    correct: 1,
+    explanation: "Skyggepris forteller hvor mye Z (målfunksjonen) endres hvis vi øker høyre side av en bindende restriksjon med én enhet. Gjelder kun innenfor sensitivitetsintervallet."
+  },
+  {
+    cat: "LP-sensitivitet",
+    weight: "MC",
+    points: 3,
+    difficulty: "medium",
+    text: "Hva er 'redusert kostnad' for en variabel x₁ med verdi 0 i optimal løsning?",
+    type: "mc",
+    options: [
+      "Hvor mye målfunksjonskoeffisienten må endres før x₁ blir lønnsom å produsere",
+      "Kostnaden ved å produsere x₁",
+      "Profittmarginen for x₁",
+      "Antall x₁ vi bør lage"
+    ],
+    correct: 0,
+    explanation: "Redusert kostnad er forbedringen i målfunksjonskoeffisienten som trengs for at variabelen skal være lønnsom å inkludere i optimal løsning. Hvis x₁ allerede er > 0 i optimum, er redusert kostnad = 0."
+  },
+  {
+    cat: "LP-sensitivitet",
+    weight: "MC",
+    points: 3,
+    difficulty: "hard",
+    text: "Sensitivitetsintervallet for en målfunksjonskoeffisient forteller deg...",
+    type: "mc",
+    options: [
+      "Innenfor hvilket område Z (profitten) ikke endrer seg",
+      "Innenfor hvilket område den optimale LØSNINGEN (x-verdiene) ikke endrer seg, selv om Z endrer seg",
+      "Hvor mye en restriksjon kan endres",
+      "Hvor sterk modellen er"
+    ],
+    correct: 1,
+    explanation: "Sensitivitetsintervallet for koeffisienten i målfunksjonen sier hvor mye koeffisienten kan variere uten at x-verdiene endrer seg. Z (totalprofitten) vil derimot endre seg lineært med koeffisienten."
+  },
+  {
+    cat: "Transport",
+    weight: "MC",
+    points: 3,
+    difficulty: "medium",
+    text: "I et transportproblem hvor totalt tilbud > totalt etterspørsel, hva må gjøres?",
+    type: "mc",
+    options: [
+      "Ingen ting — Solver håndterer det",
+      "Legg til en 'dummy'-destinasjon som absorberer overskuddet (med kostnad = 0)",
+      "Skaler ned tilbudet til lik etterspørsel",
+      "Bruk likhet (=) for tilbud-restriksjoner"
+    ],
+    correct: 1,
+    explanation: "Ubalansert problem løses med dummy-destinasjon (tilbud > etterspørsel) eller dummy-kilde (etterspørsel > tilbud). Kostnaden er 0 fordi varene ikke faktisk fraktes. Alternativt: bruk ≤ for tilbud i Excel."
+  },
+  {
+    cat: "Lokalisering",
+    weight: "MC",
+    points: 4,
+    difficulty: "medium",
+    text: "Sentergravitasjonsmetoden — hva er riktig formel for optimal x-koordinat?",
+    type: "mc",
+    options: [
+      "x* = Σ xi / n",
+      "x* = Σ(xi · Ti) / Σ Ti, der Ti = antall turer til kunde i",
+      "x* = MAX(xi)",
+      "x* = MEDIAN(xi)"
+    ],
+    correct: 1,
+    explanation: "Sentergravitasjonsmetoden vekter hver kunde med antall turer (eller volum): x* = Σ(xi·Ti) / Σ(Ti). Dette minimerer vektet avstand."
+  },
+  {
+    cat: "Prognose-teori",
+    weight: "MC",
+    points: 4,
+    difficulty: "medium",
+    text: "Hva er ETT av de viktigste funnene fra M3/M4/M5-konkurransene (prognoseforskning)?",
+    type: "mc",
+    options: [
+      "Mer komplekse modeller gir alltid bedre prognoser",
+      "Enkle modeller (naive/eksp. glatting) presterer overraskende godt — ofte like bra som komplekse",
+      "Det er umulig å predikere fremtiden",
+      "Bare maskinlæringsmodeller bør brukes"
+    ],
+    correct: 1,
+    explanation: "Hovedfunn: (1) Enkle modeller slår ofte komplekse, (2) kombinerte prognoser er mer robuste, (3) det er vanskelig å slå benchmark konsistent. M4/M5 viste at ML har potensial, men krever store data og fungerer best i kombinasjon."
+  },
+  {
+    cat: "Prognose-teori",
+    weight: "MC",
+    points: 3,
+    difficulty: "medium",
+    text: "Hvilken prognosefeil-måling er BEST når du vil sammenligne modeller på tvers av tidsserier med ulike skalaer?",
+    type: "mc",
+    options: ["MAE (Mean Absolute Error)", "MSE (Mean Squared Error)", "MAPE (Mean Absolute Percentage Error)", "Standardavvik"],
+    correct: 2,
+    explanation: "MAPE gir prosentvis feil og er skala-uavhengig — ideelt for å sammenligne på tvers av forskjellige tidsserier. MAE og MSE er i samme enhet som dataene og kan ikke sammenlignes direkte."
+  },
+  {
+    cat: "Prognose-teori",
+    weight: "MC",
+    points: 3,
+    difficulty: "medium",
+    text: "Du analyserer en daglig tidsserie 2013-2026 med tydelig årlig sesongmønster og ingen klar trend. Hvilken modell anbefales?",
+    type: "mc",
+    options: [
+      "Enkel eksponentiell glatting",
+      "Glidende gjennomsnitt (3-perioders)",
+      "Regresjonsmodell med sesongdummyer (og evt. AR-ledd)",
+      "Tilfeldig vandring (random walk)"
+    ],
+    correct: 2,
+    explanation: "Sesongdata krever en modell som eksplisitt fanger sesong. Multippel regresjon med dummyvariabler for hver sesong er standard. Et AR-ledd (y_{t-1}) hjelper på autokorrelasjon."
+  },
+  {
+    cat: "Prognose-teori",
+    weight: "MC",
+    points: 3,
+    difficulty: "medium",
+    text: "I eksponentiell glatting: Hva betyr en HØY α (f.eks. 0,8)?",
+    type: "mc",
+    options: [
+      "Prognosen reagerer raskt på nye data, men er mer påvirket av støy",
+      "Prognosen er mer 'glattet' og stabil",
+      "Modellen ignorerer trender",
+      "Det blir umulig å beregne"
+    ],
+    correct: 0,
+    explanation: "Høy α (nært 1) gir mer vekt til siste observasjon → rask reaksjon, men sårbar for støy. Lav α (nært 0) gir tregere men mer stabil prognose. Trade-off: reaktivitet vs. stabilitet."
+  },
+  {
+    cat: "Prognose-teori",
+    weight: "MC",
+    points: 3,
+    difficulty: "medium",
+    text: "Sesongindekser MÅ normaliseres slik at...",
+    type: "mc",
+    options: [
+      "Summen av alle indekser er 1",
+      "Summen er lik antall sesonger (4 for kvartal, 12 for måned)",
+      "Hver indeks er mellom 0 og 1",
+      "Den største indeksen er 1"
+    ],
+    correct: 1,
+    explanation: "Sesongindeksene må summere til antall sesonger (4 kvartaler eller 12 måneder). Hvis ikke-normalisert sum f.eks. er 3,95, multipliseres hver indeks med 4/3,95. Da sier en indeks på 1,2 'denne sesongen er 20% over gjennomsnitt'."
+  },
+  {
+    cat: "Lager-teori",
+    weight: "MC",
+    points: 3,
+    difficulty: "easy",
+    text: "Hva står Co og Cc for i EOQ-modellen?",
+    type: "mc",
+    options: [
+      "Co = lagerkostnad, Cc = bestillingskostnad",
+      "Co = bestillingskostnad per ordre, Cc = lagerkostnad per enhet per år",
+      "Co = ordrekost, Cc = capital cost",
+      "Co = optimalt antall, Cc = kvalitetskontroll"
+    ],
+    correct: 1,
+    explanation: "Co (Cost of ordering) = bestillingskostnad per ordre, uavhengig av kvantum. Cc (Cost of carrying) = lagerkostnad per enhet per år. EOQ balanserer disse to."
+  },
+  {
+    cat: "Lager-teori",
+    weight: "MC",
+    points: 3,
+    difficulty: "medium",
+    text: "I EOQ-modellen, hva skjer i optimal Q*?",
+    type: "mc",
+    options: [
+      "Bestillingskostnader > lagerkostnader",
+      "Bestillingskostnader < lagerkostnader",
+      "Bestillingskostnader = lagerkostnader",
+      "Begge kostnader = 0"
+    ],
+    correct: 2,
+    explanation: "I EOQ-optimum krysser bestillings- og lagerkostnadene hverandre. Totale årlige bestillingskostnader = totale årlige lagerkostnader = Co·D/Q = Cc·Q/2."
+  },
+  {
+    cat: "Lager-teori",
+    weight: "MC",
+    points: 4,
+    difficulty: "medium",
+    text: "Forskjellen mellom EOQ og EPQ (Economic Production Quantity)?",
+    type: "mc",
+    options: [
+      "EOQ er for innkjøp, EPQ er for produksjon",
+      "EOQ antar øyeblikkelig levering, EPQ antar gradvis levering (parallelt med uttak)",
+      "EOQ er for ferdigvarer, EPQ er for råvarer",
+      "Begge ovenfor (b og c)"
+    ],
+    correct: 1,
+    explanation: "EPQ (også kalt POQ — Production Order Quantity) brukes når levering ikke skjer øyeblikkelig. Varene kommer gradvis (produksjonsrate P) mens uttak skjer kontinuerlig (etterspørsel d). Krever at P > d."
+  },
+  {
+    cat: "Lager-teori",
+    weight: "MC",
+    points: 4,
+    difficulty: "medium",
+    text: "I shortage-modellen (EOQ med restnotering) — hva er forskjellen fra standard EOQ?",
+    type: "mc",
+    options: [
+      "Q* er alltid mindre",
+      "Lageret tillates å gå tomt; kunder venter på etterleveranse mot en shortage-kostnad Cs",
+      "Bestillingskostnaden er lavere",
+      "Modellen er ikke gyldig i praksis"
+    ],
+    correct: 1,
+    explanation: "Shortage-modellen tillater lageret å gå tomt. Kundene legger inn restordre som leveres når neste batch ankommer. Vi handler off lagerkostnad mot shortage-kostnad. Q* > standard EOQ."
+  },
+  {
+    cat: "Lager-teori",
+    weight: "MC",
+    points: 4,
+    difficulty: "medium",
+    text: "Pugg z-verdiene for servicenivå. Hvilken z-verdi tilsvarer 95% servicenivå?",
+    type: "mc",
+    options: ["1,28", "1,645", "2,33", "3,09"],
+    correct: 1,
+    explanation: "Pugg disse: 90% → z=1,28 | 95% → z=1,645 | 99% → z=2,33 | 99,9% → z=3,09. Disse brukes i bestillingspunkt med usikkerhet for å beregne sikkerhetslager."
+  },
+  {
+    cat: "Lager-teori",
+    weight: "MC",
+    points: 3,
+    difficulty: "medium",
+    text: "Bestillingspunkt UTEN usikkerhet beregnes som...",
+    type: "mc",
+    options: [
+      "B = d × L (etterspørsel per dag × ledetid)",
+      "B = Q × L",
+      "B = D / L",
+      "B = EOQ × Cc"
+    ],
+    correct: 0,
+    explanation: "Uten usikkerhet: B = d̄·L (forventet forbruk i ledetiden). Med usikkerhet legges sikkerhetslager til: B = d̄·L + z·σ_total."
+  },
+  {
+    cat: "Lager-teori",
+    weight: "MC",
+    points: 4,
+    difficulty: "hard",
+    text: "I figuren med Q (max lager), S (shortage) — hvilken modell er dette?",
+    type: "mc",
+    options: [
+      "Standard EOQ",
+      "EOQ med restnotering (shortage)",
+      "EPQ (gradvis produksjon)",
+      "Two-bin system"
+    ],
+    correct: 1,
+    explanation: "Når figuren viser både positiv del (lager) OG negativ del (shortage S) er det shortage-modellen. Max lager = Q-S. Gjennomsnittlig lager i perioden med varer = (Q-S)/2."
+  },
+  {
+    cat: "Lager-teori",
+    weight: "MC",
+    points: 3,
+    difficulty: "medium",
+    text: "Hva er hovedinnsikten ved kvantumsrabatt-problemer?",
+    type: "mc",
+    options: [
+      "Velg alltid det største kvantumet med rabatt",
+      "Sammenlign TOTAL årskostnad (bestilling + lager + innkjøpspris) for hvert relevante kvantumsnivå og velg det laveste",
+      "EOQ er alltid riktig svar",
+      "Bruk gjennomsnittsprisen"
+    ],
+    correct: 1,
+    explanation: "Med rabatter inkluderes innkjøpsprisen P i totalkostnaden: TC = Co·(D/Q) + Cc·(Q/2) + P·D. Sammenlign TC for EOQ ved hver prisklasse og velg laveste."
+  },
+  {
+    cat: "Lager-teori",
+    weight: "MC",
+    points: 3,
+    difficulty: "medium",
+    text: "Hva er Reorder Point (bestillingspunkt) brukt til?",
+    type: "mc",
+    options: [
+      "Å bestemme størrelsen på bestillingen",
+      "Å bestemme NÅR (ved hvilket lagernivå) en ny bestilling skal legges inn",
+      "Å beregne totale kostnader",
+      "Å sette en pris på lageret"
+    ],
+    correct: 1,
+    explanation: "Bestillingspunkt B sier ved hvilket lagernivå du må bestille for å unngå å gå tom under ledetiden. Q (kvantumet) bestemmer hvor mye du bestiller, B bestemmer når."
+  },
+  {
+    cat: "Prognose-teori",
+    weight: "MC",
+    points: 3,
+    difficulty: "medium",
+    text: "I justert eksponentiell glatting (Holt's metode), hva legger β-parameteren glatting på?",
+    type: "mc",
+    options: [
+      "Nivået (level)",
+      "Trenden",
+      "Sesongkomponenten",
+      "Tilfeldig støy"
+    ],
+    correct: 1,
+    explanation: "Holt's modell har to glattingsparametere: α for nivået og β for trenden. Begge er mellom 0 og 1. Holt-Winters (trippel eksp.glatting) tillegger en γ for sesong."
+  },
+  {
+    cat: "LP-teori",
+    weight: "MC",
+    points: 3,
+    difficulty: "medium",
+    text: "Hva er FORSKJELLEN mellom å bruke lineær trendlinje og lineær regresjon for prognose?",
+    type: "mc",
+    options: [
+      "Det er ingen forskjell — de gir alltid samme svar",
+      "Trendlinje bruker tid (t) som forklaringsvariabel, regresjon bruker en annen relevant variabel (f.eks. temperatur, byggetillatelser)",
+      "Regresjon er bare for små datasett",
+      "Trendlinje krever spesialprogramvare"
+    ],
+    correct: 1,
+    explanation: "Trendlinje: ŷ = a + b·t (tid som forklaring). Regresjon: ŷ = a + b·x der x er en relevant forklaringsvariabel. Hvis du har en variabel som forklarer y bedre enn tid (f.eks. issalg vs temperatur), bruk regresjon."
+  },
+  {
+    cat: "Lager-teori",
+    weight: "MC",
+    points: 3,
+    difficulty: "easy",
+    text: "Hvis bestillingskostnaden Co dobles, hva skjer med optimal EOQ?",
+    type: "mc",
+    options: [
+      "EOQ dobles",
+      "EOQ øker med faktor √2 ≈ 1,41",
+      "EOQ halveres",
+      "EOQ er uendret"
+    ],
+    correct: 1,
+    explanation: "EOQ = √(2·Co·D / Cc). Når Co dobles → EOQ multipliseres med √2 ≈ 1,41. Generelt: EOQ skalerer med kvadratroten av Co og D."
+  },
+  {
+    cat: "Lager-teori",
+    weight: "MC",
+    points: 3,
+    difficulty: "medium",
+    text: "Hvis etterspørselen D firdobles, hva skjer med optimal EOQ?",
+    type: "mc",
+    options: [
+      "EOQ firdobles",
+      "EOQ dobles (faktor √4 = 2)",
+      "EOQ er uendret",
+      "EOQ halveres"
+    ],
+    correct: 1,
+    explanation: "EOQ = √(2·Co·D / Cc). Når D firdobles → EOQ multipliseres med √4 = 2. Antall bestillinger pr år (D/Q) går da også opp, men ikke proporsjonalt med D."
+  },
+  {
+    cat: "LP-teori",
+    weight: "MC",
+    points: 3,
+    difficulty: "hard",
+    text: "Når er en LP-modell 'degenerert'?",
+    type: "mc",
+    options: [
+      "Når den ikke har noen løsning",
+      "Når flere restriksjoner krysser i samme hjørnepunkt (mer enn nødvendig er bindende)",
+      "Når målfunksjonen er negativ",
+      "Når den er ikke-lineær"
+    ],
+    correct: 1,
+    explanation: "Degenerasjon: mer enn det minimum antall restriksjoner som trengs er bindende i samme punkt. Kan forårsake at skyggepriser ikke er entydige. Sjelden på eksamen, men godt å vite."
+  },
+  {
+    cat: "Prognose-teori",
+    weight: "MC",
+    points: 3,
+    difficulty: "medium",
+    text: "Hvilken modell ville du bruke for å predikere noe som har TREND men ingen sesong?",
+    type: "mc",
+    options: [
+      "Glidende gjennomsnitt (MA)",
+      "Enkel eksponentiell glatting",
+      "Lineær trendlinje eller Holt's justerte eksp.glatting",
+      "Sesongindeks"
+    ],
+    correct: 2,
+    explanation: "MA og enkel eksp.glatting fanger ikke trend godt — de henger etter. Bruk en metode designet for trend: lineær trendlinje (ŷ = a + b·t) eller Holt's metode (eksp. glatting med trendkomponent)."
+  },
+  {
+    cat: "Intro/Begreper",
+    weight: "MC",
+    points: 2,
+    difficulty: "easy",
+    text: "I LP-formulering, hva er 'ikke-negativitetskrav' (x ≥ 0)?",
+    type: "mc",
+    options: [
+      "En målfunksjon",
+      "En restriksjon som sier at variablene ikke kan være negative",
+      "En antagelse om markedet",
+      "En valgfri tilleggsbetingelse"
+    ],
+    correct: 1,
+    explanation: "x ≥ 0 er en standardrestriksjon i nesten alle LP-problemer — du kan ikke produsere et negativt antall enheter. Skal ALLTID med i en formulering."
+  }
+];
+
+// ========== MATH QUESTIONS (30) ==========
+const mathQuestions = [
+  {
+    cat: "Break-even",
+    weight: "5%",
+    points: 4,
+    difficulty: "easy",
+    text: "Pris = 1100 kr, VUC = 500 kr, FC = 225 000 kr. Beregn break-even volumet.",
+    type: "number",
+    correct: 375,
+    tolerance: 1,
+    unit: "enheter",
+    formulaHint: "Break-even = FC / (P - VUC)",
+    explanation: "Break-even = 225 000 / (1100 - 500) = 225 000 / 600 = 375 enheter."
+  },
+  {
+    cat: "Break-even",
+    weight: "5%",
+    points: 4,
+    difficulty: "easy",
+    text: "Pris = 1100 kr, VUC = 600 kr (variable kostnader økte med 100), FC = 225 000 kr. Hva er ny break-even?",
+    type: "number",
+    correct: 450,
+    tolerance: 1,
+    unit: "enheter",
+    explanation: "BE = 225 000 / (1100 - 600) = 225 000 / 500 = 450 enheter. Sammenlign med 375 — break-even øker når VUC øker."
+  },
+  {
+    cat: "Break-even",
+    weight: "5%",
+    points: 4,
+    difficulty: "easy",
+    text: "Firma selger 750 enheter til 1100 kr/stk med VUC = 500 kr/stk og FC = 225 000 kr. Beregn total profitt.",
+    type: "number",
+    correct: 225000,
+    tolerance: 1,
+    unit: "kr",
+    formulaHint: "Profit = (P - VUC) × Q - FC",
+    explanation: "Profit = (1100-500)×750 - 225 000 = 600×750 - 225 000 = 450 000 - 225 000 = 225 000 kr."
+  },
+  
+  // LP / Sensitivitet
+  {
+    cat: "LP-grafisk",
+    weight: "10%",
+    points: 6,
+    difficulty: "medium",
+    text: `LP-modell: MAX Z = 0,6x₁ + 0,5x₂
+
+Restriksjoner:
+1) 0,1x₁ ≤ 30
+2) 0,15x₂ ≤ 30
+3) 0,04x₁ + 0,04x₂ ≤ 16
+4) 0,01x₁ + 0,024x₂ ≤ 6
+
+Skjæringspunkt rest. 1 og 3: (300, 100). Beregn Z i dette punktet.`,
+    type: "number",
+    correct: 230,
+    tolerance: 1,
+    unit: "kr",
+    explanation: "Z = 0,6·300 + 0,5·100 = 180 + 50 = 230. Dette er optimal Z."
+  },
+  {
+    cat: "LP-grafisk",
+    weight: "5%",
+    points: 5,
+    difficulty: "medium",
+    text: `Samme LP-modell. Skjæringspunkt rest. 3 og 4: x₁ = 257,14, x₂ = 142,86.
+
+Beregn Z i dette punktet.`,
+    type: "number",
+    correct: 225.7,
+    tolerance: 1,
+    unit: "kr",
+    explanation: "Z = 0,6·257,14 + 0,5·142,86 = 154,29 + 71,43 ≈ 225,71 kr. (Lavere enn 230 → optimum er IKKE her.)"
+  },
+  {
+    cat: "LP-sensitivitet",
+    weight: "5%",
+    points: 4,
+    difficulty: "medium",
+    text: `For x₁: målfunksjonskoeffisient = 0,6, tillatt øk = 1E+30, tillatt reduser = 0,1.
+
+Hva er nedre grense for sensitivitetsintervallet?`,
+    type: "number",
+    correct: 0.5,
+    tolerance: 0.01,
+    unit: "kr",
+    formulaHint: "Nedre grense = koeffisient − tillatt reduser",
+    explanation: "Nedre grense = 0,6 - 0,1 = 0,5. Øvre grense er uendelig (1E+30). Intervall: [0,5; ∞)."
+  },
+  {
+    cat: "LP-sensitivitet",
+    weight: "5%",
+    points: 4,
+    difficulty: "medium",
+    text: `For x₂: målfunksjonskoeffisient = 0,5, tillatt øk = 0,1, tillatt reduser = 0,5.
+
+Hva er sensitivitetsintervallet for x₂ (skriv nedre grense)?`,
+    type: "number",
+    correct: 0,
+    tolerance: 0.01,
+    unit: "kr",
+    explanation: "Nedre = 0,5 - 0,5 = 0. Øvre = 0,5 + 0,1 = 0,6. Intervall: [0; 0,6]. Hvis x₂-koeffisienten blir < 0, endrer optimum seg."
+  },
+  {
+    cat: "LP-sensitivitet",
+    weight: "5%",
+    points: 4,
+    difficulty: "medium",
+    text: `For restriksjonen 'Mel': verdi = 16, skyggepris = 12,5, tillatt øk = 1, tillatt reduser = 4.
+
+Hvis vi øker mel-kapasiteten fra 16 til 17 pund (innenfor intervallet), hvor mye øker Z?`,
+    type: "number",
+    correct: 12.5,
+    tolerance: 0.1,
+    unit: "kr",
+    formulaHint: "ΔZ = skyggepris × Δ(høyre side)",
+    explanation: "Skyggepris = 12,5 betyr at hver ekstra pund mel øker Z med 12,5 kr. ΔZ = 12,5·1 = 12,5 kr. Ny Z = 230 + 12,5 = 242,5 kr."
+  },
+  {
+    cat: "LP-sensitivitet",
+    weight: "5%",
+    points: 5,
+    difficulty: "hard",
+    text: `For 'Mel': verdi = 16, skyggepris = 12,5, tillatt øk = 1, tillatt reduser = 4.
+
+Hva er øvre grense for sensitivitetsintervallet for høyre side?`,
+    type: "number",
+    correct: 17,
+    tolerance: 0.1,
+    unit: "pund",
+    explanation: "Øvre grense = 16 + 1 = 17 pund. Innenfor [12, 17] gjelder skyggeprisen på 12,5. Utenfor må modellen løses på nytt."
+  },
+  
+  // Prognose
+  {
+    cat: "Prognose-MAPE",
+    weight: "5%",
+    points: 4,
+    difficulty: "medium",
+    text: `Beregn MAPE for:
+Salg: 10, 15, 22, 12, 10
+Prognose: 8, 10, 20, 15, 12
+
+Avrund til én desimal.`,
+    type: "number",
+    correct: 21.5,
+    tolerance: 1.5,
+    unit: "%",
+    formulaHint: "MAPE = (1/n) × Σ|Salg − Prognose|/Salg × 100%",
+    explanation: `|10-8|/10=20% | |15-10|/15=33,3% | |22-20|/22=9,1% | |12-15|/12=25% | |10-12|/10=20%
+MAPE = (20+33,3+9,1+25+20)/5 = 107,4/5 ≈ 21,5%`
+  },
+  {
+    cat: "Prognose-ES",
+    weight: "5%",
+    points: 5,
+    difficulty: "medium",
+    text: `Enkel eksponentiell glatting: D₁=83, D₂=78, D₃=75. F₁ = D₁ = 83. α = 0,2.
+
+Hva er F₄? Avrund til én desimal.`,
+    type: "number",
+    correct: 80.6,
+    tolerance: 0.3,
+    unit: "%",
+    formulaHint: "F_{t+1} = α·D_t + (1−α)·F_t",
+    explanation: `F₂ = 0,2·83 + 0,8·83 = 83,0
+F₃ = 0,2·78 + 0,8·83 = 82,0
+F₄ = 0,2·75 + 0,8·82,0 = 80,6`
+  },
+  {
+    cat: "Prognose-trend",
+    weight: "5%",
+    points: 5,
+    difficulty: "medium",
+    text: `Lineær trendlinje y = a + b·t med a = 2,36 og b = 0,267.
+
+Hva er prognose når t = 30?`,
+    type: "number",
+    correct: 10.4,
+    tolerance: 0.2,
+    unit: "",
+    explanation: "y = 2,36 + 0,267·30 = 2,36 + 8,01 = 10,37 ≈ 10,4."
+  },
+  {
+    cat: "Prognose-regresjon",
+    weight: "5%",
+    points: 5,
+    difficulty: "medium",
+    text: `Multiple regresjon: ŷ_t = α + Σβ_i·Ukedag_i + β_7·t + β_8·y_{t-1}
+
+α=10, β_mandag=-5, β_7=5, β_8=0,60. Dag 5 er mandag, y₄ = 100.
+
+Hva er prognose ŷ₅?`,
+    type: "number",
+    correct: 90,
+    tolerance: 1,
+    unit: "",
+    explanation: `ŷ₅ = 10 + (-5) + 5·5 + 0,60·100 = 10 - 5 + 25 + 60 = 90`
+  },
+  {
+    cat: "Prognose-regresjon",
+    weight: "5%",
+    points: 5,
+    difficulty: "hard",
+    text: `Samme modell. Dag 6 er tirsdag (β_tirsdag = 5), y₅ = 90. Hva er ŷ₆?`,
+    type: "number",
+    correct: 99,
+    tolerance: 1,
+    unit: "",
+    explanation: `ŷ₆ = 10 + 5 + 5·6 + 0,60·90 = 10 + 5 + 30 + 54 = 99`
+  },
+  {
+    cat: "Prognose-sesong",
+    weight: "10%",
+    points: 6,
+    difficulty: "hard",
+    text: `Sesongindekser før normalisering: Q1=1,026, Q2=1,279, Q3=0,998, Q4=0,648.
+Sum = 3,951. Normaliser slik at sum = 4.
+
+Hva er normalisert SI for Q1? (3 desimaler)`,
+    type: "number",
+    correct: 1.039,
+    tolerance: 0.005,
+    unit: "",
+    formulaHint: "Normalisert SI = SI × (4 / sum)",
+    explanation: `Faktor = 4/3,951 = 1,01240
+Q1 normalisert = 1,026 × 1,01240 = 1,0387 ≈ 1,039`
+  },
+  {
+    cat: "Prognose-sesong",
+    weight: "10%",
+    points: 6,
+    difficulty: "hard",
+    text: `Forventet årsomsetning år 4 = 6634 kg. Normalisert SI for Q1 = 1,039.
+
+Hva er prognose for Q1 år 4?`,
+    type: "number",
+    correct: 1724,
+    tolerance: 30,
+    unit: "kg",
+    formulaHint: "Prognose Qi = (årsforventning/4) × SI_normalisert,i",
+    explanation: `Gjennomsnittlig kvartal = 6634/4 = 1658,5 kg
+Prognose Q1 = 1658,5 × 1,039 = 1722,7 ≈ 1723 kg`
+  },
+  
+  // Lagerstyring — EOQ
+  {
+    cat: "Lager-EOQ",
+    weight: "8%",
+    points: 5,
+    difficulty: "easy",
+    text: "D = 25 000 enheter/år, Co = 20 kr, Cc = 40 kr/enhet/år.\n\nBeregn optimal EOQ.",
+    type: "number",
+    correct: 158,
+    tolerance: 3,
+    unit: "enheter",
+    formulaHint: "EOQ = √(2·Co·D / Cc)",
+    explanation: "EOQ = √(2·20·25000/40) = √25000 ≈ 158 enheter."
+  },
+  {
+    cat: "Lager-EOQ",
+    weight: "5%",
+    points: 4,
+    difficulty: "easy",
+    text: "D = 25 000, Q* = 158. Hvor mange bestillinger gjøres pr år?",
+    type: "number",
+    correct: 158,
+    tolerance: 3,
+    unit: "bestillinger",
+    explanation: "Antall = D/Q* = 25000/158 ≈ 158 bestillinger pr år."
+  },
+  {
+    cat: "Lager-EOQ",
+    weight: "5%",
+    points: 5,
+    difficulty: "medium",
+    text: "D = 7800 liter/år, Co = 4600 kr, Cc = 88 kr/liter/år.\n\nBeregn optimal EOQ.",
+    type: "number",
+    correct: 903,
+    tolerance: 20,
+    unit: "liter",
+    explanation: "EOQ = √(2·4600·7800/88) = √815 454 ≈ 903 liter."
+  },
+  {
+    cat: "Lager-EOQ",
+    weight: "5%",
+    points: 5,
+    difficulty: "medium",
+    text: "D = 7800, EOQ = 903, Co = 4600, Cc = 88.\n\nBeregn totale årlige kostnader (Co·D/Q + Cc·Q/2).",
+    type: "number",
+    correct: 79466,
+    tolerance: 1500,
+    unit: "kr",
+    formulaHint: "TC = Co·D/Q + Cc·Q/2",
+    explanation: `Bestillingskostnad: 4600·7800/903 = 39 733 kr
+Lagerkostnad: 88·903/2 = 39 732 kr
+TC ≈ 79 466 kr (de to delene er like ved EOQ!)`
+  },
+  {
+    cat: "Lager-bestillingspunkt",
+    weight: "5%",
+    points: 4,
+    difficulty: "easy",
+    text: "Etterspørsel = 7800 liter/år, 230 driftsdager, ledetid = 20 dager.\n\nHva er bestillingspunktet (uten usikkerhet)?",
+    type: "number",
+    correct: 678,
+    tolerance: 10,
+    unit: "liter",
+    formulaHint: "B = d × L = (D/dager) × L",
+    explanation: `d = 7800/230 = 33,9 liter/dag
+B = 33,9 × 20 = 678 liter`
+  },
+  
+  // EPQ
+  {
+    cat: "Lager-EPQ",
+    weight: "8%",
+    points: 6,
+    difficulty: "hard",
+    text: `Holt sag: D = 8050 stk/år, 230 driftsdager, P = 50 stk/dag, Co = 3000 kr, Cc = 300 kr/stk/år.
+
+Beregn EPQ.`,
+    type: "number",
+    correct: 732,
+    tolerance: 50,
+    unit: "stk",
+    formulaHint: "EPQ = √(2·Co·D/Cc) × √(P/(P−d)) der d = D/dager",
+    explanation: `d = 8050/230 ≈ 35 stk/dag
+EOQ-del = √(2·3000·8050/300) = √161 000 ≈ 401
+Korreksjon = √(50/(50-35)) = √3,333 ≈ 1,826
+EPQ ≈ 401 × 1,826 ≈ 732 stk`
+  },
+  
+  // Bestillingspunkt med usikkerhet
+  {
+    cat: "Lager-bestillingspunkt",
+    weight: "5%",
+    points: 5,
+    difficulty: "medium",
+    text: `d̄ = 1100 enh/dag, σ_d = 150, L = 10 dager, σ_L = 2 dager. Servicenivå 90% (z = 1,28).
+
+Beregn bestillingspunktet (avrund til hele).`,
+    type: "number",
+    correct: 13880,
+    tolerance: 200,
+    unit: "enheter",
+    formulaHint: "B = d̄·L + z·√(L·σ_d² + d̄²·σ_L²)",
+    explanation: `σ² = 10·150² + 1100²·2² = 225 000 + 4 840 000 = 5 065 000
+σ ≈ 2250
+B = 1100·10 + 1,28·2250 = 11 000 + 2 880 = 13 880`
+  },
+  {
+    cat: "Lager-bestillingspunkt",
+    weight: "5%",
+    points: 5,
+    difficulty: "medium",
+    text: `Samme data. Beregn bestillingspunktet for 95% servicenivå (z = 1,645).`,
+    type: "number",
+    correct: 14701,
+    tolerance: 200,
+    unit: "enheter",
+    explanation: `B = 1100·10 + 1,645·2250 = 11 000 + 3 701 = 14 701 enheter`
+  },
+  {
+    cat: "Lager-bestillingspunkt",
+    weight: "5%",
+    points: 5,
+    difficulty: "medium",
+    text: `Samme data. Beregn bestillingspunktet for 99% servicenivå (z = 2,33).`,
+    type: "number",
+    correct: 16243,
+    tolerance: 200,
+    unit: "enheter",
+    explanation: `B = 1100·10 + 2,33·2250 = 11 000 + 5 243 = 16 243 enheter`
+  },
+  {
+    cat: "Lager-bestillingspunkt",
+    weight: "5%",
+    points: 5,
+    difficulty: "hard",
+    text: `Samme data. Beregn bestillingspunktet for 99,9% servicenivå (z = 3,09).`,
+    type: "number",
+    correct: 17953,
+    tolerance: 250,
+    unit: "enheter",
+    explanation: `B = 1100·10 + 3,09·2250 = 11 000 + 6 953 = 17 953 enheter. Merk hvor mye sikkerhetslageret øker for marginal økning i servicenivå!`
+  },
+  
+  // Shortage
+  {
+    cat: "Lager-shortage",
+    weight: "5%",
+    points: 5,
+    difficulty: "hard",
+    text: `EOQ med shortage: Co = 500, Cc = 10, Cs = 15, D = 5000.
+
+Beregn optimal Q*.`,
+    type: "number",
+    correct: 913,
+    tolerance: 20,
+    unit: "enheter",
+    formulaHint: "Q* = √(2·Co·D/Cc) × √((Cc+Cs)/Cs)",
+    explanation: `EOQ-del = √(2·500·5000/10) = √500 000 ≈ 707
+Korreksjon = √((10+15)/15) = √(25/15) = √1,667 ≈ 1,291
+Q* = 707 × 1,291 ≈ 913 enheter`
+  },
+  {
+    cat: "Lager-shortage",
+    weight: "5%",
+    points: 5,
+    difficulty: "hard",
+    text: `Med Q* = 913, Cc = 10, Cs = 15.
+
+Beregn optimal S* (maksimal shortage).`,
+    type: "number",
+    correct: 365,
+    tolerance: 15,
+    unit: "enheter",
+    formulaHint: "S* = Q* × Cc/(Cc + Cs)",
+    explanation: `S* = 913 × 10/(10+15) = 913 × 10/25 = 913 × 0,4 = 365,2 enheter`
+  },
+  
+  // To-vare problem
+  {
+    cat: "Lager-EOQ",
+    weight: "5%",
+    points: 5,
+    difficulty: "medium",
+    text: `Vare 1: Co = 50, Cc₁ = 15, D₁ = 5000.
+
+Beregn EOQ for vare 1.`,
+    type: "number",
+    correct: 183,
+    tolerance: 5,
+    unit: "enheter",
+    explanation: `EOQ₁ = √(2·50·5000/15) = √33 333 ≈ 183 enheter`
+  },
+  {
+    cat: "Lager-EOQ",
+    weight: "5%",
+    points: 5,
+    difficulty: "medium",
+    text: `Vare 2: Co = 50, Cc₂ = 10, D₂ = 10 000.
+
+Beregn EOQ for vare 2.`,
+    type: "number",
+    correct: 316,
+    tolerance: 10,
+    unit: "enheter",
+    explanation: `EOQ₂ = √(2·50·10000/10) = √100 000 ≈ 316 enheter`
+  },
+  
+  // EOQ med antall bestillinger per år
+  {
+    cat: "Lager-EOQ",
+    weight: "5%",
+    points: 4,
+    difficulty: "easy",
+    text: `D = 5000, EOQ = 707 (uten shortage). Hvor mange dager mellom hver bestilling (anta 365 dager/år)?`,
+    type: "number",
+    correct: 52,
+    tolerance: 2,
+    unit: "dager",
+    formulaHint: "T = 365 × Q/D",
+    explanation: `T = 365·707/5000 = 51,6 ≈ 52 dager mellom hver bestilling.`
+  }
+];
+
+// ========== STATE ==========
+let currentQuestions = [];
+let currentQ = 0;
+let answers = {};
+let totalScore = 0;
+let maxPossibleScore = 0;
+let startTime;
+let timerInterval;
+let selectedMode = null;
+
+const modeInfo = {
+  theory: { 
+    title: "📚 Teori & Begreper", 
+    desc: "35 spørsmål om definisjoner, sant/usant, og konseptuelle valg.",
+    time: "30-45 min",
+    difficulty: "Lett-medium"
+  },
+  math: { 
+    title: "🧮 Matematikk & Regning", 
+    desc: "30 oppgaver med tallsvar. Trenger papir og kalkulator.",
+    time: "60-90 min",
+    difficulty: "Medium-vanskelig"
+  },
+  full: { 
+    title: "🎯 Full eksamen", 
+    desc: "Blandet utvalg av 25 oppgaver — som en ekte eksamen.",
+    time: "3-4 timer",
+    difficulty: "Variert"
+  }
+};
+
+function selectMode(mode) {
+  selectedMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('mode-' + mode).classList.add('active');
+  
+  const info = modeInfo[mode];
+  document.getElementById('start-title').textContent = info.title;
+  document.getElementById('start-desc').textContent = info.desc;
+  
+  let count, points;
+  if (mode === 'theory') { count = theoryQuestions.length; points = theoryQuestions.reduce((s,q)=>s+q.points,0); }
+  else if (mode === 'math') { count = mathQuestions.length; points = mathQuestions.reduce((s,q)=>s+q.points,0); }
+  else { 
+    count = 25; 
+    const mixed = getFullExamMix();
+    points = mixed.reduce((s,q)=>s+q.points,0);
+  }
+  
+  document.getElementById('info-count').textContent = count;
+  document.getElementById('info-points').textContent = points;
+  document.getElementById('info-time').textContent = info.time;
+  document.getElementById('info-difficulty').textContent = info.difficulty;
+  
+  document.getElementById('start-info').style.display = 'block';
+  document.getElementById('start-btn').style.display = 'inline-block';
+}
+
+function getFullExamMix() {
+  // Realistic exam mix: ~10 theory + ~15 math
+  const theorySample = shuffleArray([...theoryQuestions]).slice(0, 10);
+  const mathSample = shuffleArray([...mathQuestions]).slice(0, 15);
+  return shuffleArray([...theorySample, ...mathSample]);
+}
+
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz() {
+  if (selectedMode === 'theory') currentQuestions = [...theoryQuestions];
+  else if (selectedMode === 'math') currentQuestions = [...mathQuestions];
+  else currentQuestions = getFullExamMix();
+  
+  maxPossibleScore = currentQuestions.reduce((s,q)=>s+q.points,0);
+  currentQ = 0;
+  answers = {};
+  totalScore = 0;
+  startTime = Date.now();
+  
+  document.getElementById('start-screen').classList.add('hidden');
+  document.querySelector('.mode-selector').style.display = 'none';
+  document.getElementById('quiz-area').classList.add('active');
+  
+  document.getElementById('total-q').textContent = currentQuestions.length;
+  document.getElementById('max-score').textContent = maxPossibleScore;
+  
+  renderQuestions();
+  showQuestion(0);
+  startTimer();
+}
+
+function startTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const h = Math.floor(elapsed / 3600);
+    const m = Math.floor((elapsed % 3600) / 60);
+    const s = elapsed % 60;
+    document.getElementById('timer').textContent = 
+      `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }, 1000);
+}
+
+function renderQuestions() {
+  const container = document.getElementById('questions-container');
+  container.innerHTML = currentQuestions.map((q, idx) => {
+    let inputHtml = '';
+    if (q.type === 'mc') {
+      inputHtml = `<div class="options">
+        ${q.options.map((opt, i) => 
+          `<button class="option" onclick="selectOption(${idx}, ${i})" id="opt-${idx}-${i}">${opt}</button>`
+        ).join('')}
+      </div>`;
+    } else if (q.type === 'number') {
+      inputHtml = `
+        <input type="number" step="any" class="text-input" id="input-${idx}" 
+               placeholder="Skriv tallet ditt..." onchange="saveText(${idx})">
+        <p class="hint">Enhet: ${q.unit || '-'}</p>`;
+    }
+    
+    const formulaHtml = q.formulaHint ? 
+      `<div class="formula-hint">💡 Formel: ${q.formulaHint}</div>` : '';
+    
+    const isTheory = selectedMode === 'theory' || (q.type === 'mc' && !q.formulaHint);
+    const qClass = isTheory ? 'theory' : 'math';
+    
+    const diffLabel = q.difficulty === 'easy' ? 'Lett' : q.difficulty === 'hard' ? 'Vanskelig' : 'Medium';
+
+    return `
+      <div class="question ${qClass}" id="q-${idx}">
+        <div class="q-header">
+          <span class="q-num">Spørsmål ${idx + 1}</span>
+          <span class="q-cat">${q.cat}</span>
+          <span class="q-weight">${q.weight} · ${q.points}p</span>
+          <span class="q-difficulty ${q.difficulty}">${diffLabel}</span>
+        </div>
+        <div class="q-text">${q.text}</div>
+        ${formulaHtml}
+        ${inputHtml}
+        <div class="q-actions">
+          <button class="btn btn-primary" onclick="submitAnswer(${idx})">Sjekk svar</button>
+          <button class="btn btn-show" onclick="showAnswer(${idx})">Vis fasit</button>
+        </div>
+        <div class="feedback" id="fb-${idx}"></div>
+      </div>
+    `;
+  }).join('');
+}
+
+function showQuestion(idx) {
+  document.querySelectorAll('.question').forEach(q => q.classList.remove('visible'));
+  document.getElementById(`q-${idx}`).classList.add('visible');
+  currentQ = idx;
+  document.getElementById('current-q').textContent = idx + 1;
+  document.getElementById('prev-btn').disabled = idx === 0;
+  document.getElementById('next-btn').textContent = idx === currentQuestions.length - 1 ? 'Avslutt' : 'Neste →';
+  updateProgress();
+  window.scrollTo(0, 0);
+}
+
+function navigate(dir) {
+  const newIdx = currentQ + dir;
+  if (newIdx < 0) return;
+  if (newIdx >= currentQuestions.length) {
+    showSummary();
+    return;
+  }
+  showQuestion(newIdx);
+}
+
+function updateProgress() {
+  const answered = Object.keys(answers).length;
+  const pct = (answered / currentQuestions.length) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('score').textContent = totalScore;
+}
+
+function selectOption(qIdx, optIdx) {
+  document.querySelectorAll(`#q-${qIdx} .option`).forEach(o => o.classList.remove('selected'));
+  document.getElementById(`opt-${qIdx}-${optIdx}`).classList.add('selected');
+  answers[qIdx] = { selected: optIdx, type: 'mc' };
+}
+
+function saveText(qIdx) {
+  const val = document.getElementById(`input-${qIdx}`).value;
+  answers[qIdx] = { value: val, type: currentQuestions[qIdx].type };
+}
+
+function submitAnswer(qIdx) {
+  const q = currentQuestions[qIdx];
+  const ans = answers[qIdx];
+  const fb = document.getElementById(`fb-${qIdx}`);
+  
+  if (!ans) {
+    fb.className = 'feedback incorrect show';
+    fb.innerHTML = '<strong>⚠️ Du må svare først.</strong>';
+    return;
+  }
+  
+  let isCorrect = false;
+  
+  if (q.type === 'mc') {
+    isCorrect = ans.selected === q.correct;
+    document.querySelectorAll(`#q-${qIdx} .option`).forEach((o, i) => {
+      o.classList.remove('correct', 'incorrect');
+      if (i === q.correct) o.classList.add('correct');
+      else if (i === ans.selected) o.classList.add('incorrect');
+    });
+  } else if (q.type === 'number') {
+    const userVal = parseFloat(ans.value);
+    isCorrect = !isNaN(userVal) && Math.abs(userVal - q.correct) <= q.tolerance;
+  }
+  
+  if (isCorrect) {
+    if (!ans.scored) {
+      totalScore += q.points;
+      ans.scored = true;
+    }
+    fb.className = 'feedback correct show';
+    fb.innerHTML = `<strong>✅ Riktig! +${q.points} poeng</strong><div style="margin-top:8px">${q.explanation}</div>`;
+  } else {
+    fb.className = 'feedback incorrect show';
+    let correctDisplay = q.type === 'mc' ? q.options[q.correct] : `${q.correct} ${q.unit || ''}`;
+    fb.innerHTML = `<strong>❌ Feil.</strong> 
+      <div class="answer-key">Riktig svar: ${correctDisplay}</div>
+      <div style="margin-top:8px"><strong>Forklaring:</strong> ${q.explanation}</div>`;
+  }
+  updateProgress();
+}
+
+function showAnswer(qIdx) {
+  const q = currentQuestions[qIdx];
+  const fb = document.getElementById(`fb-${qIdx}`);
+  let answerText = q.type === 'mc' ? q.options[q.correct] : `${q.correct} ${q.unit || ''}`;
+  fb.className = 'feedback info show';
+  fb.innerHTML = `<strong>📖 Fasit:</strong>
+    <div class="answer-key">${answerText}</div>
+    <div style="margin-top:10px"><strong>Forklaring:</strong> ${q.explanation}</div>`;
+}
+
+function showSummary() {
+  clearInterval(timerInterval);
+  document.querySelectorAll('.question').forEach(q => q.classList.remove('visible'));
+  document.querySelector('.nav-buttons').style.display = 'none';
+  document.querySelector('.progress-container').style.display = 'none';
+  document.getElementById('quiz-area').classList.remove('active');
+  
+  const summary = document.getElementById('summary');
+  summary.classList.add('visible');
+  
+  const pct = Math.round((totalScore / maxPossibleScore) * 100);
+  document.getElementById('final-score').textContent = pct + '%';
+  
+  let grade, txt;
+  if (pct >= 86) { grade = 'A'; txt = 'Fremragende! Du er godt forberedt til eksamen. 🌟'; }
+  else if (pct >= 75) { grade = 'B'; txt = 'Meget bra! Repeter områder du tapte poeng på. 💪'; }
+  else if (pct >= 65) { grade = 'C'; txt = 'Solid prestasjon. Fokuser på de tyngste temaene fremover. 👍'; }
+  else if (pct >= 49) { grade = 'D'; txt = 'Bestått. Bruk neste øktene på LP og lagerstyring spesielt.'; }
+  else if (pct >= 36) { grade = 'E'; txt = 'Snauk bestått. Du må jobbe mer systematisk med LP og formlene.'; }
+  else { grade = 'F'; txt = 'Ikke bestått ennå. Start med oppsummeringsforelesningen.'; }
+  
+  document.getElementById('final-grade').textContent = grade;
+  document.getElementById('final-grade').style.color = pct >= 65 ? '#6bff9e' : pct >= 49 ? '#ffd166' : '#ff6b6b';
+  document.getElementById('summary-text').textContent = txt;
+  
+  const elapsed = Math.floor((Date.now() - startTime) / 60000);
+  document.getElementById('time-used').textContent = `⏱️ Tid brukt: ${elapsed} minutter`;
+}
+
+function restart() {
+  document.getElementById('summary').classList.remove('visible');
+  document.querySelector('.nav-buttons').style.display = 'flex';
+  document.querySelector('.progress-container').style.display = 'block';
+  startQuiz();
+}
+
+function backToMenu() {
+  document.getElementById('summary').classList.remove('visible');
+  document.querySelector('.nav-buttons').style.display = 'flex';
+  document.querySelector('.progress-container').style.display = 'block';
+  document.getElementById('start-screen').classList.remove('hidden');
+  document.querySelector('.mode-selector').style.display = 'grid';
+  document.getElementById('quiz-area').classList.remove('active');
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('start-info').style.display = 'none';
+  document.getElementById('start-btn').style.display = 'none';
+  document.getElementById('start-title').textContent = 'Velg en modus over for å starte';
+  document.getElementById('start-desc').textContent = 'Hver modus tester forskjellige aspekter av faget.';
+  if (timerInterval) clearInterval(timerInterval);
+}
+</script>
+
+</body>
+</html>
